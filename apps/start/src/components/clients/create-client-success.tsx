@@ -1,6 +1,5 @@
-import { CopyIcon, DownloadIcon, RocketIcon } from 'lucide-react';
+import { CopyIcon, DownloadIcon } from 'lucide-react';
 import CopyInput from '../forms/copy-input';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { isRealClientSecret } from '@/hooks/use-client-secret';
 import { clipboard } from '@/utils/clipboard';
@@ -63,22 +62,6 @@ export function CreateClientSuccess({ id, secret, type }: Props) {
           Save credentials
         </Button>
       </div>
-      <Alert>
-        <RocketIcon className="h-4 w-4" />
-        <AlertTitle>Get started!</AlertTitle>
-        <AlertDescription>
-          Read our{' '}
-          <a
-            className="underline"
-            href="https://openpanel.dev/docs"
-            rel="noreferrer"
-            target="_blank"
-          >
-            documentation
-          </a>{' '}
-          to get started. Easy peasy!
-        </AlertDescription>
-      </Alert>
     </div>
   );
 }
