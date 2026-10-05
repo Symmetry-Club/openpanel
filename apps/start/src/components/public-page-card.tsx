@@ -6,6 +6,7 @@ interface PublicPageCardProps {
   title: string;
   description?: ReactNode;
   children?: ReactNode;
+  /** Kept for upstream compatibility; the "Powered by" footer is not rendered. */
   showFooter?: boolean;
 }
 
@@ -13,7 +14,6 @@ export function PublicPageCard({
   title,
   description,
   children,
-  showFooter = true,
 }: PublicPageCardProps) {
   return (
     <div>
@@ -31,20 +31,6 @@ export function PublicPageCard({
           </div>
           {!!children && <div className="mt-6">{children}</div>}
         </div>
-        {showFooter && (
-          <div className="p-6 text-sm max-w-sm col gap-1 text-muted-foreground">
-            <p>
-              Powered by{' '}
-              <a href="https://openpanel.dev" className="font-medium">
-                OpenPanel.dev
-              </a>
-              {' · '}
-              <a href="https://dashboard.openpanel.dev/onboarding">
-                Try it for free today!
-              </a>
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

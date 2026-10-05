@@ -1,6 +1,6 @@
 import CopyInput from '@/components/forms/copy-input';
 import { usePageContextValue } from '@/contexts/page-context';
-import { ExternalLinkIcon, KeyRoundIcon, SparklesIcon } from 'lucide-react';
+import { KeyRoundIcon, SparklesIcon } from 'lucide-react';
 import { useChatRuntime } from './chat-runtime';
 
 /**
@@ -61,15 +61,6 @@ export function ChatDrawerNotConfigured() {
         <CopyInput label="OpenAI" value="OPENAI_API_KEY=sk-..." />
         <CopyInput label="Anthropic" value="ANTHROPIC_API_KEY=sk-ant-..." />
       </div>
-      <a
-        href="https://openpanel.dev/docs/self-hosting/environment-variables#ai-features"
-        target="_blank"
-        rel="noopener"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-      >
-        View setup docs
-        <ExternalLinkIcon className="size-3.5" />
-      </a>
     </div>
   );
 }

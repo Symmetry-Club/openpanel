@@ -1,4 +1,5 @@
 import { ShareEnterPassword } from '@/components/auth/share-enter-password';
+import { BRAND } from '@/branding';
 import { FullPageEmptyState } from '@/components/full-page-empty-state';
 import FullPageLoadingState from '@/components/full-page-loading-state';
 import { GrafanaGrid, useReportLayouts } from '@/components/grafana-grid';
@@ -42,7 +43,7 @@ export const Route = createFileRoute('/share/dashboard/$shareId')({
       return {
         meta: [
           {
-            title: 'Share not found - OpenPanel.dev',
+            title: `Share not found - ${BRAND.name}`,
           },
         ],
       };
@@ -53,7 +54,7 @@ export const Route = createFileRoute('/share/dashboard/$shareId')({
       return {
         meta: [
           {
-            title: `${share.organization?.name} - OpenPanel.dev`,
+            title: `${share.organization?.name} - ${BRAND.name}`,
           },
         ],
       };
@@ -62,7 +63,7 @@ export const Route = createFileRoute('/share/dashboard/$shareId')({
     return {
       meta: [
         {
-          title: `${share.dashboard?.name} - ${share.organization?.name} - OpenPanel.dev`,
+          title: `${share.dashboard?.name} - ${share.organization?.name} - ${BRAND.name}`,
         },
       ],
     };

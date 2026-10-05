@@ -1,25 +1,36 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { z } from 'zod';
+import { AuthShell } from '@/components/auth/auth-shell';
+import { SignInPanel } from '@/components/auth/sign-in-panel';
 import FullPageLoadingState from '@/components/full-page-loading-state';
 import { LogoSquare } from '@/components/logo';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
+import { BRAND } from '@/branding';
 import { useLogout } from '@/hooks/use-logout';
 import { useNumber } from '@/hooks/use-numer-formatter';
 import { useTRPC } from '@/integrations/trpc/react';
-import { createTitle } from '@/utils/title';
+import { createTitle, PAGE_TITLES } from '@/utils/title';
 
+interface IndexLoaderData {
+  isSignedIn: boolean;
+}
+
+// Signed-out visitors get the sign-in form right here on `/` (no redirect to
+// `/login`), so the root URL is the only entry point anyone sees.
 export const Route = createFileRoute('/')({
-  beforeLoad: ({ context }) => {
-    if (!context.session?.session) {
-      throw redirect({ to: '/login' });
-    }
-  },
-  component: LandingPage,
-  head: () => ({
-    meta: [{ title: createTitle('Welcome') }],
+  component: IndexPage,
+  validateSearch: z.object({
+    error: z.string().optional(),
+    correlationId: z.string().optional(),
+    inviteId: z.string().optional(),
   }),
-  loader: async ({ context }) => {
+  loader: async ({ context }): Promise<IndexLoaderData> => {
+    if (!context.session?.session) {
+      return { isSignedIn: false };
+    }
+
     // Unsure why not using ensureQueryData here works
     // We need to put staleTime and gcTime to 0 to get the latest data
     // Even tho this query has never been called before
@@ -42,9 +53,39 @@ export const Route = createFileRoute('/')({
         params: { organizationId: organizations[0].id },
       });
     }
+
+    return { isSignedIn: true };
   },
+  head: ({ loaderData }) => ({
+    meta: [
+      {
+        title: createTitle(
+          loaderData?.isSignedIn === false ? PAGE_TITLES.LOGIN : 'Welcome'
+        ),
+      },
+    ],
+  }),
   pendingComponent: FullPageLoadingState,
 });
+
+function IndexPage() {
+  const { isSignedIn } = Route.useLoaderData();
+  const { error, correlationId, inviteId } = Route.useSearch();
+
+  if (!isSignedIn) {
+    return (
+      <AuthShell>
+        <SignInPanel
+          correlationId={correlationId}
+          error={error}
+          inviteId={inviteId}
+        />
+      </AuthShell>
+    );
+  }
+
+  return <LandingPage />;
+}
 
 function LandingPage() {
   const trpc = useTRPC();
@@ -59,10 +100,7 @@ function LandingPage() {
       <div className="col mx-auto max-w-2xl gap-12 px-4 py-8">
         <div className="col gap-4">
           <LogoSquare className="w-full max-w-14 md:max-w-24" />
-          <PageHeader
-            description="The best web and product analytics tool out there (our honest opinion)."
-            title="Welcome to OpenPanel.dev"
-          />
+          <PageHeader title={`Welcome to ${BRAND.name}`} />
         </div>
 
         <div className="col gap-2">

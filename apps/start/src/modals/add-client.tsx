@@ -1,12 +1,11 @@
 import { CreateClientSuccess } from '@/components/clients/create-client-success';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAppParams } from '@/hooks/use-app-params';
 import { handleError } from '@/integrations/trpc/react';
-import { cn } from '@/utils/cn';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SaveIcon } from 'lucide-react';
 import type { SubmitHandler } from 'react-hook-form';
@@ -68,14 +67,6 @@ export default function AddClient() {
           <ModalHeader title="Success" text={'Your client is created'} />
           <CreateClientSuccess {...mutation.data} />
           <div className="mt-4 flex gap-4">
-            <a
-              className={cn(buttonVariants({ variant: 'secondary' }), 'flex-1')}
-              href="https://openpanel.dev/docs"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Read docs
-            </a>
             <Button className="flex-1" onClick={() => popModal()}>
               Close
             </Button>

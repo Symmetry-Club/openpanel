@@ -2,10 +2,12 @@
  * Utility functions for generating page titles
  */
 
-const BASE_TITLE = 'OpenPanel.dev';
+import { BRAND } from '@/branding';
+
+const BASE_TITLE = BRAND.name;
 
 /**
- * Creates a hierarchical title with the format: "Page Title | Section | OpenPanel.dev"
+ * Creates a hierarchical title with the format: "Page Title | Section | <brand name>"
  */
 export function createTitle(
   pageTitle: string,

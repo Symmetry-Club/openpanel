@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { BRAND } from '@/branding';
 
-const BASE_SUFFIX = ' | OpenPanel.dev';
+const BASE_SUFFIX = ` | ${BRAND.name}`;
 
 function inject(title: string, projectName: string): string {
   if (!title.endsWith(BASE_SUFFIX)) return title;

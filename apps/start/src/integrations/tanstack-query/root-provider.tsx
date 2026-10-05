@@ -30,12 +30,16 @@ function handleUnauthorized(error: unknown) {
   if (error.data?.httpStatus !== 401) {
     return;
   }
-  if (window.location.pathname.startsWith('/login')) {
+  // Signed-out visitors see the sign-in form on `/` (and `/login`).
+  if (
+    window.location.pathname === '/' ||
+    window.location.pathname.startsWith('/login')
+  ) {
     return;
   }
   // Hard navigation tears down in-flight refetches and WS subscriptions so
   // the stale tab stops hammering the API after the session is gone.
-  window.location.assign('/login');
+  window.location.assign('/');
 }
 
 // Resolve the tRPC base URL per environment. During SSR the server can reach

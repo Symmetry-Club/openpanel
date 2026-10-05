@@ -4,7 +4,6 @@ import { Link, useLocation, useParams } from '@tanstack/react-router';
 import { MenuIcon, SparklesIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useChatState } from './chat/chat-context';
-import { FeedbackButton } from './feedback-button';
 import { LogoSquare } from './logo';
 import { ProfileToggle } from './profile-toggle';
 import ProjectSelector from './project-selector';
@@ -15,7 +14,6 @@ import SidebarProjectMenu, {
   ActionCTAButton as ActionProjectCTAButton,
 } from './sidebar-project-menu';
 import { Button } from './ui/button';
-import { useAppContext } from '@/hooks/use-app-context';
 import { useTRPC } from '@/integrations/trpc/react';
 import { cn } from '@/utils/cn';
 
@@ -78,7 +76,6 @@ export function SidebarContainer({
 }: SidebarContainerProps) {
   const [active, setActive] = useState(false);
   const location = useLocation();
-  const { isSelfHosted } = useAppContext();
   const { projectId } = useParams({ strict: false });
   const { isOpen: chatOpen, openChatForContext, closeChat } = useChatState();
 
@@ -136,15 +133,6 @@ export function SidebarContainer({
           <div className="pointer-events-none absolute right-0 bottom-full left-0 h-8 bg-gradient-to-t from-card to-card/0" />
           <div className="border-border border-t bg-card">
             <div className="flex items-center">
-              <FeedbackButton className="h-12 flex-1 whitespace-nowrap rounded-none border-border border-r px-4 text-muted-foreground outline-0 hover:bg-accent hover:text-accent-foreground" />
-              <a
-                className="flex h-12 flex-1 items-center justify-center gap-2 border-border border-r font-medium text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                href="https://openpanel.dev/docs"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Docs
-              </a>
               {projectId && (
                 <button
                   type="button"
@@ -160,15 +148,6 @@ export function SidebarContainer({
               )}
               <ProfileToggle className="h-12 flex-1 rounded-none hover:bg-accent hover:text-accent-foreground" />
             </div>
-            {isSelfHosted && (
-              <a
-                className="center-center flex h-12 cursor-pointer gap-2 border-border border-t px-4 font-medium text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                href="https://openpanel.dev/supporter"
-              >
-                <span>Support Us</span>
-                <span>Pay What You Want</span>
-              </a>
-            )}
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_login/reset-password')({
   head: () => ({
     meta: [
       { title: createTitle(PAGE_TITLES.RESET_PASSWORD) },
-      { name: 'robots', content: 'noindex, follow' },
+      { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
   component: Component,
