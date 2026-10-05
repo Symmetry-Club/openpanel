@@ -7,6 +7,8 @@ import {
   conversionService,
   createSqlBuilder,
   EMPTY_BREAKDOWN_LABEL,
+  applySqlDateRange,
+  executeUserSql,
   formatClickhouseDate,
   funnelService,
   getChartPrevStartEndDate,
@@ -27,9 +29,11 @@ import {
   onlyReportEvents,
   profileJoinColumns,
   sankeyService,
+  SqlReportsNotConfiguredError,
   TABLE_NAMES,
   type IServiceProfile,
   validateShareAccess,
+  validateUserSql,
 } from '@openpanel/db';
 import {
   type IChartEvent,
@@ -38,13 +42,19 @@ import {
   zCriteria,
   zRange,
   zReportInput,
+  zSqlOptions,
   zTimeInterval,
 } from '@openpanel/validation';
 import { flatten, map, pipe, prop, sort, uniq } from 'ramda';
 import sqlstring from 'sqlstring';
 import { z } from 'zod';
 import { getProjectAccess } from '../access';
-import { TRPCAccessError, TRPCForbiddenError } from '../errors';
+import {
+  TRPCAccessError,
+  TRPCBadRequestError,
+  TRPCForbiddenError,
+  TRPCInternalServerError,
+} from '../errors';
 import {
   cacheMiddleware,
   createTRPCRouter,
@@ -681,6 +691,76 @@ export const chartRouter = createTRPCRouter({
         : input;
 
       return AggregateChartEngine.execute(chartInput);
+    }),
+
+  /**
+   * Hand-written ClickHouse SQL report. Runs on the read-only client behind
+   * `CLICKHOUSE_SQL_URL`, never on `ch`. A shared report always runs its
+   * saved query; the query in the input is only used by project members
+   * (the report editor). The query is not scoped to a project: SQL reports
+   * target an internal, single-organization deployment.
+   */
+  sql: chartProcedure
+    .use(cacher)
+    .input(
+      z.object({
+        projectId: z.string(),
+        query: zSqlOptions.shape.query.optional(),
+        range: zRange.default('30d'),
+        startDate: z.string().nullish(),
+        endDate: z.string().nullish(),
+        shareId: z.string().optional(),
+        id: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      let query = input.query;
+      let projectId = input.projectId;
+      let dateInput: Pick<typeof input, 'range' | 'startDate' | 'endDate'> =
+        input;
+
+      if (ctx.report) {
+        if (
+          ctx.report.chartType !== 'sql' ||
+          ctx.report.options?.type !== 'sql'
+        ) {
+          throw new TRPCBadRequestError('This report is not a SQL report');
+        }
+        query = ctx.report.options.query;
+        projectId = ctx.report.projectId;
+        dateInput = {
+          range: input.range ?? ctx.report.range,
+          startDate: input.startDate ?? ctx.report.startDate,
+          endDate: input.endDate ?? ctx.report.endDate,
+        };
+      }
+
+      if (!query) {
+        throw new TRPCBadRequestError('The SQL query is empty');
+      }
+
+      const validation = validateUserSql(query);
+      if (!validation.valid) {
+        throw new TRPCBadRequestError(validation.error);
+      }
+
+      const { timezone } = await getSettingsForProject(projectId);
+      const dates = getChartStartEndDate(dateInput, timezone);
+
+      try {
+        return await executeUserSql(
+          applySqlDateRange(validation.query, dates)
+        );
+      } catch (error) {
+        if (error instanceof SqlReportsNotConfiguredError) {
+          throw new TRPCInternalServerError(error.message);
+        }
+        // Surface ClickHouse's own message: it is what the author needs to
+        // fix the query (syntax errors, unknown columns, timeouts…).
+        throw new TRPCBadRequestError(
+          error instanceof Error ? error.message : 'The SQL query failed'
+        );
+      }
     }),
 
   cohort: chartProcedure
