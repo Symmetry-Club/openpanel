@@ -200,6 +200,7 @@ export const chartTypes = {
   retention: 'Retention',
   conversion: 'Conversion',
   sankey: 'Sankey',
+  sql: 'SQL',
 } as const;
 
 export const chartSegments = {

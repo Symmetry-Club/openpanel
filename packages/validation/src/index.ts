@@ -195,16 +195,38 @@ export const zHistogramOptions = z.object({
   stacked: z.boolean().default(false),
 });
 
+export const zSqlVisualization = z.enum([
+  'table',
+  'line',
+  'bar',
+  'metric',
+  'pie',
+]);
+
+/**
+ * Hand-written ClickHouse SQL report. The query runs against a separate
+ * read-only ClickHouse user (see `CLICKHOUSE_SQL_URL`), never the OpenPanel
+ * client. Reports of this type are saved with `series: []`.
+ */
+export const zSqlOptions = z.object({
+  type: z.literal('sql'),
+  query: z.string().min(1).max(100_000),
+  visualization: zSqlVisualization.default('table'),
+});
+
 export const zReportOptions = z.discriminatedUnion('type', [
   zFunnelOptions,
   zRetentionOptions,
   zSankeyOptions,
   zHistogramOptions,
+  zSqlOptions,
 ]);
 
 export type IReportOptions = z.infer<typeof zReportOptions>;
 export type ISankeyOptions = z.infer<typeof zSankeyOptions>;
 export type IHistogramOptions = z.infer<typeof zHistogramOptions>;
+export type ISqlOptions = z.infer<typeof zSqlOptions>;
+export type ISqlVisualization = z.infer<typeof zSqlVisualization>;
 
 export const zWidgetType = z.enum(['realtime', 'counter']);
 export type IWidgetType = z.infer<typeof zWidgetType>;
@@ -294,7 +316,7 @@ export const zReportInput = z.object({
     .describe('IDs of series that should be visible on the chart'),
   options: zReportOptions
     .optional()
-    .describe('Chart-specific options (funnel, retention, sankey)'),
+    .describe('Chart-specific options (funnel, retention, sankey, sql)'),
   // Optional display fields
   name: z.string().optional().describe('The user-defined name for the report'),
   lineType: zLineType

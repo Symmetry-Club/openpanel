@@ -4,6 +4,7 @@ import {
   ChartBarIcon,
   ChartColumnIncreasingIcon,
   ConeIcon,
+  DatabaseIcon,
   GaugeIcon,
   GitBranchIcon,
   Globe2Icon,
@@ -60,6 +61,7 @@ export function ReportChartType({
     map: Globe2Icon,
     conversion: TrendingUpIcon,
     sankey: GitBranchIcon,
+    sql: DatabaseIcon,
   };
 
   return (

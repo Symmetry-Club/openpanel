@@ -396,6 +396,7 @@ enum ChartType {
   retention
   conversion
   sankey
+  sql
 }
 
 model Dashboard {
