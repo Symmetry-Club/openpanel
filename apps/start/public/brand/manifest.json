@@ -3,17 +3,17 @@
   "name": "Symmetry Analytics",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "/brand/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "/brand/icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "/brand/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
