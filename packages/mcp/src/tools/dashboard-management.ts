@@ -16,6 +16,17 @@ const reportSchema = zReport
   .omit({ projectId: true, limit: true, offset: true })
   .strict()
   .superRefine((report, ctx) => {
+    // SQL reports run hand-written ClickHouse SQL; only people author them
+    // from the dashboard, never an AI client.
+    if (report.chartType === 'sql' || report.options?.type === 'sql') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['chartType'],
+        message: 'SQL reports can only be created from the dashboard',
+      });
+      return;
+    }
+
     if (report.range !== 'custom') {
       return;
     }

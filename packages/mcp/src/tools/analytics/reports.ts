@@ -292,6 +292,15 @@ export async function runReport(input: {
     return { error: 'Report does not belong to this project', reportId: input.reportId };
   }
 
+  // SQL reports hold hand-written ClickHouse SQL that assistants must not
+  // run; they are only executed from the dashboard.
+  if (report.chartType === 'sql') {
+    return {
+      error: 'SQL reports can only be viewed in the dashboard',
+      reportId: input.reportId,
+    };
+  }
+
   const { timezone } = await getSettingsForProject(input.projectId);
   const { startDate, endDate } = getChartStartEndDate(report, timezone);
   const chartInput = { ...report, startDate, endDate, timezone };
