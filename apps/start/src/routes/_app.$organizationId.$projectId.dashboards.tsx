@@ -12,6 +12,7 @@ import {
   BarChartHorizontalIcon,
   ChartScatterIcon,
   ConeIcon,
+  DatabaseIcon,
   GitBranchIcon,
   Globe2Icon,
   HashIcon,
@@ -157,6 +158,7 @@ function Component() {
                         retention: ChartScatterIcon,
                         conversion: TrendingUpIcon,
                         sankey: GitBranchIcon,
+                        sql: DatabaseIcon,
                       }[report.chartType];
 
                       return (
