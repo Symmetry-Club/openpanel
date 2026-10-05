@@ -128,6 +128,10 @@ export const listReports = chatTool(
     }),
 );
 
+// SQL reports run hand-written ClickHouse SQL. The chat agent must never
+// author free-form SQL, so `sql` is not a chart type it can generate.
+const { sql: _sqlChartType, ...agentChartTypes } = chartTypes;
+
 export const getReportData = chatTool(
   {
     name: 'get_report_data',
@@ -161,7 +165,7 @@ export const generateReport = chatTool(
     ].join('\n'),
     schema: z.object({
       chartType: z
-        .enum(objectToZodEnums(chartTypes))
+        .enum(objectToZodEnums(agentChartTypes))
         .describe(
           'Chart type. See the decision table in the system prompt — pick `linear`/`area` for trends, `bar`/`pie`/`map` for breakdowns, `metric` for a single number, `funnel`/`conversion`/`sankey` for flows, `retention` for cohorts, `histogram` for numeric distributions.',
         ),

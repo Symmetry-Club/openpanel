@@ -18,6 +18,18 @@ import { timeWindows } from '@openpanel/constants';
 
 import { useRouter } from '@tanstack/react-router';
 
+// Metric cards (and SQL reports drawn as a number) bring their own padding.
+function isMetricLikeReport(report: {
+  chartType: string;
+  options?: { type: string; visualization?: string } | null;
+}) {
+  return (
+    report.chartType === 'metric' ||
+    (report.options?.type === 'sql' &&
+      report.options.visualization === 'metric')
+  );
+}
+
 export function ReportItemSkeleton() {
   return (
     <div className="card h-full flex flex-col animate-pulse">
@@ -186,7 +198,7 @@ export function ReportItem({
       <div
         className={cn(
           'p-4 overflow-auto flex-1',
-          report.chartType === 'metric' && 'p-0',
+          isMetricLikeReport(report) && 'p-0',
         )}
       >
         <ReportChart
@@ -254,7 +266,7 @@ export function ReportItemReadOnly({
       <div
         className={cn(
           'p-4 overflow-auto flex-1',
-          report.chartType === 'metric' && 'p-0',
+          isMetricLikeReport(report) && 'p-0',
         )}
       >
         <ReportChart

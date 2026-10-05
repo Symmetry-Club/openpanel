@@ -17,10 +17,11 @@ export function ReportChartEmpty({
 }) {
   const {
     isEditMode,
-    report: { series },
+    report: { series, chartType },
   } = useReportChartContext();
 
-  if (!series || series.length === 0) {
+  // SQL reports have no series by design; their empty state is "no rows".
+  if ((!series || series.length === 0) && chartType !== 'sql') {
     return (
       <div className="card p-4 center-center h-full w-full flex-col relative">
         <div className="row gap-2 items-end absolute top-4 left-4">

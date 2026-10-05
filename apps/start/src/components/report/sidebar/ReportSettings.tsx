@@ -47,7 +47,11 @@ export function ReportSettings() {
   const fields = useMemo(() => {
     const fields = [];
 
-    if (chartType !== 'retention' && chartType !== 'sankey') {
+    if (
+      chartType !== 'retention' &&
+      chartType !== 'sankey' &&
+      chartType !== 'sql'
+    ) {
       fields.push('previous');
     }
 

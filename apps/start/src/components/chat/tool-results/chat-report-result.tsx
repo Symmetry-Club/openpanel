@@ -195,6 +195,8 @@ function humanizeChartType(type: string): string {
       return 'Map';
     case 'conversion':
       return 'Conversion';
+    case 'sql':
+      return 'SQL';
     default:
       return type.charAt(0).toUpperCase() + type.slice(1);
   }
