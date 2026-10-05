@@ -1,4 +1,5 @@
 import { ShareEnterPassword } from '@/components/auth/share-enter-password';
+import { BRAND } from '@/branding';
 import { FullPageEmptyState } from '@/components/full-page-empty-state';
 import FullPageLoadingState from '@/components/full-page-loading-state';
 import { LazyComponent } from '@/components/lazy-component';
@@ -42,7 +43,7 @@ export const Route = createFileRoute('/share/overview/$shareId')({
       return {
         meta: [
           {
-            title: 'Share not found - OpenPanel.dev',
+            title: `Share not found - ${BRAND.name}`,
           },
         ],
       };
@@ -51,7 +52,7 @@ export const Route = createFileRoute('/share/overview/$shareId')({
     return {
       meta: [
         {
-          title: `${share.project?.name} - ${share.organization?.name} - OpenPanel.dev`,
+          title: `${share.project?.name} - ${share.organization?.name} - ${BRAND.name}`,
         },
       ],
     };

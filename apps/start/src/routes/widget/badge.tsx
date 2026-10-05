@@ -1,3 +1,4 @@
+import { BRAND } from '@/branding';
 import { LogoSquare } from '@/components/logo';
 import { useNumber } from '@/hooks/use-numer-formatter';
 import { useTRPC } from '@/integrations/trpc/react';
@@ -61,7 +62,9 @@ function BadgeWidget({ visitors, isLoading, color }: BadgeWidgetProps) {
         <div className="text-[10px] font-medium uppercase tracking-wide text-white/80">
           ANALYTICS FROM
         </div>
-        <div className="font-semibold text-white leading-tight">OpenPanel</div>
+        <div className="font-semibold text-white leading-tight">
+          {BRAND.shortName}
+        </div>
       </div>
 
       {/* Visitor count on the right */}
