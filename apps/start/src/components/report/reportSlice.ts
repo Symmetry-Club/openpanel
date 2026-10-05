@@ -19,10 +19,25 @@ import type {
   IInterval,
   IReport,
   IReportOptions,
+  ISqlOptions,
+  ISqlVisualization,
   UnionOmit,
   zCriteria,
 } from '@openpanel/validation';
 import type { z } from 'zod';
+
+export const DEFAULT_SQL_QUERY = `SELECT event, count() AS eventos
+FROM posthog.events
+WHERE timestamp >= {{startDate}} AND timestamp < {{endDate}}
+GROUP BY event
+ORDER BY eventos DESC
+LIMIT 20`;
+
+const createDefaultSqlOptions = (): ISqlOptions => ({
+  type: 'sql',
+  query: DEFAULT_SQL_QUERY,
+  visualization: 'table',
+});
 
 type InitialState = IReport & {
   id?: string;
@@ -208,7 +223,18 @@ export const reportSlice = createSlice({
     // Chart type
     changeChartType: (state, action: PayloadAction<IChartType>) => {
       state.dirty = true;
+      const wasSql = state.chartType === 'sql';
       state.chartType = action.payload;
+
+      // SQL reports carry their whole definition in options and no series.
+      if (action.payload === 'sql') {
+        if (state.options?.type !== 'sql') {
+          state.options = createDefaultSqlOptions();
+        }
+        state.series = [];
+      } else if (wasSql) {
+        state.options = undefined;
+      }
 
       // The Metric card has always shown the total unique count. Existing
       // reports are backfilled to 'count' by migration, so default a newly
@@ -400,6 +426,25 @@ export const reportSlice = createSlice({
         state.options.include = action.payload;
       }
     },
+    changeSqlQuery(state, action: PayloadAction<string>) {
+      state.dirty = true;
+      if (state.options?.type === 'sql') {
+        state.options.query = action.payload;
+      } else {
+        state.options = { ...createDefaultSqlOptions(), query: action.payload };
+      }
+    },
+    changeSqlVisualization(state, action: PayloadAction<ISqlVisualization>) {
+      state.dirty = true;
+      if (state.options?.type === 'sql') {
+        state.options.visualization = action.payload;
+      } else {
+        state.options = {
+          ...createDefaultSqlOptions(),
+          visualization: action.payload,
+        };
+      }
+    },
     changeStacked(state, action: PayloadAction<boolean>) {
       state.dirty = true;
       if (!state.options || state.options.type !== 'histogram') {
@@ -467,6 +512,8 @@ export const {
   changeSankeySteps,
   changeSankeyExclude,
   changeSankeyInclude,
+  changeSqlQuery,
+  changeSqlVisualization,
   changeStacked,
   reorderEvents,
   changeVisibleSeries,

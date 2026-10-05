@@ -23,6 +23,7 @@ export function ReportSaveButton({ className }: ReportSaveButtonProps) {
   const fetching = [
     useIsFetching(trpc.chart.chart.pathFilter()),
     useIsFetching(trpc.chart.cohort.pathFilter()),
+    useIsFetching(trpc.chart.sql.pathFilter()),
   ];
   const { reportId } = useParams({ strict: false });
   const dispatch = useDispatch();

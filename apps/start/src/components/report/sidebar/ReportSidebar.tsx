@@ -10,21 +10,24 @@ import { ReportFixedEvents } from './report-fixed-events';
 
 export function ReportSidebar() {
   const { chartType, options } = useSelector((state) => state.report);
-  const showBreakdown = chartType !== 'retention' && chartType !== 'sankey';
+  // SQL reports are defined entirely by their query: no events, filters or
+  // breakdowns apply.
+  const isSql = chartType === 'sql';
+  const showBreakdown =
+    chartType !== 'retention' && chartType !== 'sankey' && !isSql;
   const showFixedEvents = chartType === 'sankey';
   return (
     <>
       <div className="flex flex-col gap-8">
-        {showFixedEvents ? (
+        {showFixedEvents && (
           <ReportFixedEvents
             numberOfEvents={
               options?.type === 'sankey' && options.mode === 'between' ? 2 : 1
             }
           />
-        ) : (
-          <ReportSeries />
         )}
-        <ReportGlobalFilters />
+        {!(showFixedEvents || isSql) && <ReportSeries />}
+        {!isSql && <ReportGlobalFilters />}
         {showBreakdown && <ReportBreakdowns />}
         <ReportSettings />
       </div>
