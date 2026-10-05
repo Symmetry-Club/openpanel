@@ -1,10 +1,6 @@
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { MailIcon } from 'lucide-react';
 import { z } from 'zod';
-import { Or } from '@/components/auth/or';
-import { SignInGithub } from '@/components/auth/sign-in-github';
-import { SignInGoogle } from '@/components/auth/sign-in-google';
 import { SignUpEmailForm } from '@/components/auth/sign-up-email-form';
 import FullPageLoadingState from '@/components/full-page-loading-state';
 import { useTRPC } from '@/integrations/trpc/react';
@@ -17,7 +13,6 @@ export const Route = createFileRoute('/_public/onboarding')({
   head: () => ({
     meta: [
       { title: createEntityTitle('Create an account', PAGE_TITLES.ONBOARDING) },
-      { name: 'robots', content: 'noindex, follow' },
     ],
   }),
   beforeLoad: async ({ context }) => {
@@ -28,9 +23,6 @@ export const Route = createFileRoute('/_public/onboarding')({
   component: Component,
   validateSearch,
   loader: async ({ context, location }) => {
-    await context.queryClient.ensureQueryData(
-      context.trpc.auth.providers.queryOptions()
-    );
     const search = validateSearch.safeParse(location.search);
     if (search.success && search.data.inviteId) {
       await context.queryClient.prefetchQuery(
@@ -46,11 +38,6 @@ export const Route = createFileRoute('/_public/onboarding')({
 function Component() {
   const { inviteId } = Route.useSearch();
   const trpc = useTRPC();
-  const { data: providers } = useSuspenseQuery(
-    trpc.auth.providers.queryOptions()
-  );
-  const hasOAuthProviders = providers.google || providers.github;
-  const hasBothOAuthProviders = providers.google && providers.github;
   const { data: invite } = useQuery(
     trpc.organization.getInvite.queryOptions(
       {
@@ -62,33 +49,12 @@ function Component() {
     )
   );
   return (
-    <div className="col w-full gap-8 py-4 text-left">
+    <div className="col w-full gap-6 text-left">
       <div>
-        <h1 className="mb-2 font-bold text-3xl text-foreground">
-          Start tracking in minutes
+        <h1 className="mb-2 font-semibold text-2xl text-foreground">
+          Create your account
         </h1>
-        <p className="text-muted-foreground">
-          By creating an account you accept the{' '}
-          <a
-            className="underline transition-colors hover:text-foreground"
-            href="https://openpanel.dev/terms"
-            rel="noreferrer"
-            target="_blank"
-          >
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a
-            className="underline transition-colors hover:text-foreground"
-            href="https://openpanel.dev/privacy"
-            rel="noreferrer"
-            target="_blank"
-          >
-            Privacy Policy
-          </a>
-          .
-        </p>
-        <p className="mt-3 text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Already have an account?{' '}
           <a
             className="font-medium text-foreground underline"
@@ -104,7 +70,7 @@ function Component() {
       </div>
 
       {invite && !invite.isExpired && (
-        <div className="mb-6 rounded-lg border border-border bg-card p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           <h2 className="mb-2 font-semibold text-xl">
             Invitation to {invite.organization?.name}
           </h2>
@@ -115,7 +81,7 @@ function Component() {
         </div>
       )}
       {invite?.isExpired && (
-        <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-6">
+        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-6">
           <h2 className="mb-2 font-semibold text-destructive text-xl">
             Invitation to {invite.organization?.name} has expired
           </h2>
@@ -126,35 +92,7 @@ function Component() {
         </div>
       )}
 
-      <div className="space-y-6">
-        {hasOAuthProviders && (
-          <>
-            <div
-              className={
-                hasBothOAuthProviders
-                  ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
-                  : 'grid grid-cols-1 gap-4'
-              }
-            >
-              {providers.github && (
-                <SignInGithub inviteId={inviteId} type="sign-up" />
-              )}
-              {providers.google && (
-                <SignInGoogle inviteId={inviteId} type="sign-up" />
-              )}
-            </div>
-            <p className="text-center text-muted-foreground text-xs">
-              No credit card required · Free 30-day trial · Cancel anytime
-            </p>
-
-            <Or className="my-6" />
-          </>
-        )}
-
-        <div className="mb-4 flex items-center gap-2 font-semibold text-lg">
-          <MailIcon className="size-4" />
-          Sign up with email
-        </div>
+      <div>
         <SignUpEmailForm inviteId={inviteId} />
       </div>
     </div>

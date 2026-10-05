@@ -16,7 +16,13 @@ type IForm = z.infer<typeof validator>;
 export function SignInEmailForm({
   isLastUsed,
   inviteId,
-}: { isLastUsed?: boolean; inviteId?: string }) {
+  hideForgotPassword,
+}: {
+  isLastUsed?: boolean;
+  inviteId?: string;
+  /** Password reset needs an email provider; hide it when none is configured. */
+  hideForgotPassword?: boolean;
+}) {
   const trpc = useTRPC();
   const mutation = useMutation(
     trpc.auth.signInEmail.mutationOptions({
@@ -72,17 +78,19 @@ export function SignInEmailForm({
           </span>
         )}
       </div>
-      <button
-        type="button"
-        onClick={() =>
-          pushModal('RequestPasswordReset', {
-            email: form.getValues('email'),
-          })
-        }
-        className="text-sm text-muted-foreground hover:text-highlight hover:underline transition-colors duration-200 text-center mt-2"
-      >
-        Forgot password?
-      </button>
+      {!hideForgotPassword && (
+        <button
+          type="button"
+          onClick={() =>
+            pushModal('RequestPasswordReset', {
+              email: form.getValues('email'),
+            })
+          }
+          className="text-sm text-muted-foreground hover:text-highlight hover:underline transition-colors duration-200 text-center mt-2"
+        >
+          Forgot password?
+        </button>
+      )}
     </form>
   );
 }

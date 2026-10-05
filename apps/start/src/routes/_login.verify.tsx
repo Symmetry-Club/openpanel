@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_login/verify')({
   head: () => ({
     meta: [
       { title: createTitle(PAGE_TITLES.LOGIN) },
-      { name: 'robots', content: 'noindex, follow' },
+      { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
 });
@@ -119,7 +119,7 @@ function VerifyPage() {
           : 'Use authenticator app instead'}
       </button>
       <a
-        href="/login"
+        href="/"
         className="text-xs text-muted-foreground hover:underline text-center"
       >
         Sign in with a different account

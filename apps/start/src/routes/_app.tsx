@@ -3,14 +3,12 @@ import { ConstructionIcon } from 'lucide-react';
 import { ChatDrawerSlot } from '@/components/chat/chat-drawer-slot';
 import { FullPageEmptyState } from '@/components/full-page-empty-state';
 import { Sidebar } from '@/components/sidebar';
-import { buttonVariants } from '@/components/ui/button';
 import { useAppContext } from '@/hooks/use-app-context';
-import { cn } from '@/utils/cn';
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context }) => {
     if (!context.session?.session) {
-      throw redirect({ to: '/login' });
+      throw redirect({ to: '/' });
     }
   },
   component: AppLayout,
@@ -26,16 +24,7 @@ function AppLayout() {
         description="We are currently performing maintenance on the system. Please check back later."
         icon={ConstructionIcon}
         title="Maintenance mode"
-      >
-        <a
-          className={cn(buttonVariants())}
-          href="https://status.openpanel.dev/"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Check out our status page
-        </a>
-      </FullPageEmptyState>
+      />
     );
   }
 
