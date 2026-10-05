@@ -153,16 +153,17 @@ describe('applySqlDateRange', () => {
   const range = {
     startDate: '2026-09-05 00:00:00',
     endDate: '2026-10-06 00:00:00',
+    timezone: 'Europe/Madrid',
   };
 
-  it('replaces both placeholders with escaped literals', () => {
+  it('replaces both placeholders with instants in the project timezone', () => {
     expect(
       applySqlDateRange(
         'SELECT 1 FROM events WHERE timestamp >= {{startDate}} AND timestamp < {{endDate}}',
         range,
       ),
     ).toBe(
-      "SELECT 1 FROM events WHERE timestamp >= '2026-09-05 00:00:00' AND timestamp < '2026-10-06 00:00:00'",
+      "SELECT 1 FROM events WHERE timestamp >= toDateTime('2026-09-05 00:00:00', 'Europe/Madrid') AND timestamp < toDateTime('2026-10-06 00:00:00', 'Europe/Madrid')",
     );
   });
 
@@ -170,7 +171,7 @@ describe('applySqlDateRange', () => {
     expect(
       applySqlDateRange('{{startDate}} {{ startDate }} {{endDate}}', range),
     ).toBe(
-      "'2026-09-05 00:00:00' '2026-09-05 00:00:00' '2026-10-06 00:00:00'",
+      "toDateTime('2026-09-05 00:00:00', 'Europe/Madrid') toDateTime('2026-09-05 00:00:00', 'Europe/Madrid') toDateTime('2026-10-06 00:00:00', 'Europe/Madrid')",
     );
   });
 
@@ -179,8 +180,9 @@ describe('applySqlDateRange', () => {
       applySqlDateRange('{{startDate}}', {
         startDate: "2026' OR 1=1 --",
         endDate: '',
+        timezone: "UTC') --",
       }),
-    ).toBe("'2026\\' OR 1=1 --'");
+    ).toBe("toDateTime('2026\\' OR 1=1 --', 'UTC\\') --')");
   });
 
   it('leaves queries without placeholders untouched', () => {

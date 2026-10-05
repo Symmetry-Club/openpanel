@@ -27,11 +27,11 @@ const VISUALIZATIONS: {
   label: string;
   icon: LucideIcon;
 }[] = [
-  { value: 'table', label: 'Tabla', icon: TableIcon },
-  { value: 'line', label: 'Línea', icon: LineChartIcon },
-  { value: 'bar', label: 'Barras', icon: BarChart3Icon },
-  { value: 'metric', label: 'Número', icon: HashIcon },
-  { value: 'pie', label: 'Tarta', icon: PieChartIcon },
+  { value: 'table', label: 'Table', icon: TableIcon },
+  { value: 'line', label: 'Line', icon: LineChartIcon },
+  { value: 'bar', label: 'Bar', icon: BarChart3Icon },
+  { value: 'metric', label: 'Number', icon: HashIcon },
+  { value: 'pie', label: 'Pie', icon: PieChartIcon },
 ];
 
 const EDITOR_MIN_HEIGHT = '180px';
@@ -205,12 +205,12 @@ export function ReportSqlEditor({
       />
       <div className="row flex-wrap items-center justify-between gap-2">
         <div className="text-muted-foreground text-xs">
-          Usa <code className="font-mono">{'{{startDate}}'}</code> y{' '}
-          <code className="font-mono">{'{{endDate}}'}</code> para el rango de
-          fechas del informe.
+          Use <code className="font-mono">{'{{startDate}}'}</code> and{' '}
+          <code className="font-mono">{'{{endDate}}'}</code> for the report's
+          date range.
           {hasPendingChanges && (
             <span className="ml-2 font-medium text-foreground">
-              Cambios sin ejecutar
+              Changes not run yet
             </span>
           )}
         </div>
@@ -231,10 +231,10 @@ export function ReportSqlEditor({
             icon={PlayIcon}
             loading={isRunning}
             onClick={onRun}
-            title="Ejecutar (⌘/Ctrl + Enter)"
+            title="Run (⌘/Ctrl + Enter)"
             variant="cta"
           >
-            Ejecutar
+            Run
           </Button>
         </div>
       </div>

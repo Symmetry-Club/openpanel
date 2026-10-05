@@ -167,17 +167,25 @@ export function validateUserSql(sql: string): SqlValidationResult {
 }
 
 /**
- * Replace `{{startDate}}` / `{{endDate}}` with escaped string literals of the
- * report's resolved date range. A query without placeholders is returned
- * untouched.
+ * Replace `{{startDate}}` / `{{endDate}}` with the report's resolved date
+ * range. The dates are wall-clock times in the project's timezone, so they are
+ * emitted as `toDateTime('…', '<timezone>')`: that pins the exact instant, and
+ * comparing it with a UTC column (e.g. `timestamp`) stays correct. A query
+ * without placeholders is returned untouched.
  */
 export function applySqlDateRange(
   sql: string,
-  { startDate, endDate }: { startDate: string; endDate: string },
+  {
+    startDate,
+    endDate,
+    timezone,
+  }: { startDate: string; endDate: string; timezone: string },
 ): string {
+  const toDateTime = (value: string) =>
+    `toDateTime(${sqlstring.escape(value)}, ${sqlstring.escape(timezone)})`;
   return sql
-    .replace(START_DATE_PLACEHOLDER_REGEX, () => sqlstring.escape(startDate))
-    .replace(END_DATE_PLACEHOLDER_REGEX, () => sqlstring.escape(endDate));
+    .replace(START_DATE_PLACEHOLDER_REGEX, () => toDateTime(startDate))
+    .replace(END_DATE_PLACEHOLDER_REGEX, () => toDateTime(endDate));
 }
 
 const WIDE_INTEGER_TYPE_REGEX = /^U?Int(64|128|256)$/;

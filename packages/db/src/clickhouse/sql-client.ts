@@ -68,7 +68,7 @@ function getSqlClient(): ClickHouseClient | null {
 
 export class SqlReportsNotConfiguredError extends Error {
   constructor() {
-    super('Los informes SQL no están configurados');
+    super('SQL reports are not configured (CLICKHOUSE_SQL_URL is missing)');
     this.name = 'SqlReportsNotConfiguredError';
   }
 }

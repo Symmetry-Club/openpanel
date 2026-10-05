@@ -749,7 +749,7 @@ export const chartRouter = createTRPCRouter({
 
       try {
         return await executeUserSql(
-          applySqlDateRange(validation.query, dates)
+          applySqlDateRange(validation.query, { ...dates, timezone })
         );
       } catch (error) {
         if (error instanceof SqlReportsNotConfiguredError) {
