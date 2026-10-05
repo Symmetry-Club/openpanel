@@ -112,11 +112,16 @@ export class FunnelService {
     return clix(this.client, timezone)
       .select([
         primaryKey,
-        `windowFunnel(${funnelWindowMilliseconds}${windowFunnelMode})(toUInt64(toUnixTimestamp64Milli(created_at)), ${funnels.join(', ')}) AS level`,
+        // Step conditions and breakdown selects are already-escaped SQL: pass them
+        // as expressions so select() doesn't re-escape the dates inside them
+        // (a datetime filter value would become ''2026-09-11'' and break the query).
+        clix.exp(
+          `windowFunnel(${funnelWindowMilliseconds}${windowFunnelMode})(toUInt64(toUnixTimestamp64Milli(created_at)), ${funnels.join(', ')}) AS level`,
+        ),
         ...(group === 'session_id'
           ? ['argMax(profile_id, created_at) AS profile_id']
           : []),
-        ...additionalSelects,
+        ...additionalSelects.map((s) => clix.exp(s)),
       ])
       .from(TABLE_NAMES.events, false)
       .where('project_id', '=', projectId)
