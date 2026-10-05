@@ -1,3 +1,4 @@
+import { BRAND } from '@/branding';
 import { cn } from '@/utils/cn';
 
 interface LogoProps {
@@ -7,9 +8,9 @@ interface LogoProps {
 export function LogoSquare({ className }: LogoProps) {
   return (
     <img
-      src="/logo.svg"
+      alt={`${BRAND.shortName} logo`}
       className={cn('rounded-md', className)}
-      alt="Openpanel logo"
+      src={BRAND.logoSquare}
     />
   );
 }
@@ -20,7 +21,7 @@ export function Logo({ className }: LogoProps) {
       className={cn('flex items-center gap-2 text-xl font-medium', className)}
     >
       <LogoSquare className="max-h-8" />
-      <span>openpanel.dev</span>
+      <span>{BRAND.name}</span>
     </div>
   );
 }

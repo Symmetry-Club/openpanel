@@ -27,6 +27,7 @@ import { getCookiesFn } from '@/hooks/use-cookie-store';
 import { useSessionExtension } from '@/hooks/use-session-extension';
 import type { RouterOutputs } from '@/trpc/client';
 import { op } from '@/utils/op';
+import { BRAND } from '@/branding';
 
 if (import.meta.env.VITE_OP_CLIENT_ID) {
   op.init();
@@ -58,13 +59,31 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
+      { title: BRAND.name },
+      { name: 'description', content: BRAND.description },
+      { name: 'robots', content: 'noindex, nofollow' },
+      { name: 'theme-color', content: BRAND.themeColor },
+      { name: 'application-name', content: BRAND.name },
+      { name: 'apple-mobile-web-app-title', content: BRAND.shortName },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: BRAND.name },
+      { property: 'og:title', content: BRAND.name },
+      { property: 'og:description', content: BRAND.description },
+      { property: 'og:image', content: BRAND.ogImage },
+      { name: 'twitter:card', content: 'summary' },
+      { name: 'twitter:title', content: BRAND.name },
+      { name: 'twitter:description', content: BRAND.description },
+      { name: 'twitter:image', content: BRAND.ogImage },
     ],
-    title: 'OpenPanel.dev',
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
       },
+      { rel: 'icon', href: BRAND.favicon, sizes: '48x48' },
+      { rel: 'icon', href: BRAND.logoSquare, type: 'image/svg+xml' },
+      { rel: 'apple-touch-icon', href: BRAND.appleTouchIcon },
+      { rel: 'manifest', href: BRAND.manifest },
     ],
   }),
   shellComponent: RootDocument,
@@ -128,16 +147,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Providers>{children}</Providers>
         <ThemeScriptOnce />
         <Scripts />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.$ujq=window.$ujq||[];window.uj=window.uj||new Proxy({},{get:(_,p)=>(...a)=>window.$ujq.push([p,...a])});document.head.appendChild(Object.assign(document.createElement('script'),{src:'https://cdn.userjot.com/sdk/v2/uj.js',type:'module',async:!0}));`,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.uj.init('cm6thlmwr03xr13jghznx87gk', { widget: true, trigger: 'custom' });`,
-          }}
-        />
         <div className="hidden">
           <div className="bg-chart-0 text-chart-0" />
           <div className="bg-chart-1 text-chart-1" />
