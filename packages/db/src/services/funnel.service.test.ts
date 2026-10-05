@@ -82,3 +82,40 @@ describe('FunnelService.toSeries', () => {
     expect(series[0]).toHaveLength(2);
   });
 });
+
+describe('FunnelService.buildFunnelCte', () => {
+  it('does not re-escape date values inside step conditions and breakdown selects', () => {
+    const step = (name: string) =>
+      ({
+        id: name,
+        type: 'event',
+        name,
+        segment: 'event',
+        filters: [
+          {
+            name: 'profile.properties.first_opened_at',
+            type: 'datetime',
+            operator: 'gt',
+            value: ['2026-09-11'],
+          },
+        ],
+      }) as any;
+
+    const sql = service
+      .buildFunnelCte({
+        projectId: 'p',
+        startDate: '2026-09-01 00:00:00',
+        endDate: '2026-10-01 00:00:00',
+        eventSeries: [step('screen_view'), step('sign_up')],
+        funnelWindowMilliseconds: 1000,
+        timezone: 'UTC',
+        additionalSelects: ["argMinIf(path, created_at, x > '2026-09-11') as b_0"],
+        group: 'profile_id',
+      })
+      .toSQL();
+
+    expect(sql).not.toContain("''2026-09-11''");
+    expect(sql).toContain("toString('2026-09-11')");
+    expect(sql).toContain("x > '2026-09-11'");
+  });
+});
